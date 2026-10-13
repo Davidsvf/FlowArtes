@@ -1,86 +1,281 @@
-# 🎭 FlowArtes — Ent'Artes Dance School Management Platform
+# FlowArtes — Plataforma de Gestão da Escola de Dança Ent'Artes
 
-> **Branch:** `dev` — active development. See `main` for the last stable release.
+O FlowArtes é uma aplicação web full-stack desenvolvida para apoiar a gestão da escola de dança **Ent'Artes**, em Portugal.
 
-FlowArtes is a full-stack web application built for **Ent'Artes**, a real performing-arts school in Portugal. It replaces a manual Excel and Google Sheets workflow with a structured platform covering private coaching sessions, studio scheduling, inventory management, user accounts, events, and automated billing reconciliation.
+O projeto foi criado com o objetivo de centralizar processos administrativos e operacionais que anteriormente estavam distribuídos por diferentes ferramentas, folhas de cálculo e processos manuais.
 
----
-
-## 👥 Team — DRVP Tech
-
-| Name | Student No. |
-|------|-------------|
-| João Pereira | a31505 |
-| Paulo Silva | a31506 |
-| David Faria | a31517 |
-| Vítor Rezende | a31521 |
-| Rafael Costa | a31524 |
-
-**Institution:** Instituto Politécnico do Cávado e do Ave — Escola Superior de Tecnologia  
-**Degree:** Licenciatura em Engenharia de Sistemas Informáticos  
-**Academic Year:** 2025/2026
+A aplicação permite gerir alunos, encarregados de educação, professores, aulas, horários, inventário, eventos, notificações e faturação, garantindo diferentes níveis de acesso consoante o perfil do utilizador.
 
 ---
 
-## 🛠️ Tech Stack
+## Missão do Projeto
 
-| Layer | Technology |
-|-------|------------|
-| Backend | ASP.NET Core 10, EF Core 10 |
-| Database | SQL Server (Azure), SQLite (tests) |
-| Frontend | React 19, Vite, React Router 7 |
-| Auth | JWT (HttpOnly cookie) |
-| Tests | xUnit, FluentAssertions, Moq, WebApplicationFactory |
+A missão do FlowArtes é simplificar e centralizar a gestão diária da Ent'Artes, reduzindo tarefas administrativas repetitivas e facilitando o acesso à informação.
+
+A plataforma pretende funcionar como um ponto central de interação entre:
+
+- Administração;
+- Staff;
+- Professores;
+- Encarregados de educação.
+
+O sistema foi desenvolvido tendo como base necessidades reais de uma escola de dança, procurando organizar processos que normalmente se encontram dispersos por várias ferramentas.
+
+Para além da gestão de dados, o projeto implementa regras de negócio relacionadas com o funcionamento da escola, como:
+
+- pedidos e aprovação de aulas;
+- validação de participantes;
+- gestão da disponibilidade dos professores;
+- acompanhamento do ciclo de vida das aulas;
+- controlo de acessos por perfil;
+- requisições de material;
+- gestão de faturação;
+- eventos e notificações.
+
+Este projeto foi desenvolvido em contexto académico, utilizando a Ent'Artes como caso de estudo real.
 
 ---
 
-## 📂 Project Structure
+## Principais Funcionalidades
 
+### Autenticação e Controlo de Acessos
+
+A aplicação suporta quatro perfis de utilizador:
+
+| Perfil | Descrição |
+|---|---|
+| `admin` | Administração da plataforma |
+| `staff` | Gestão da escola / Direção |
+| `coach` | Professores |
+| `parent` | Encarregados de educação |
+
+Cada perfil possui acesso a funcionalidades específicas de acordo com as respetivas responsabilidades.
+
+---
+
+### Gestão de Alunos
+
+Permite gerir a informação dos alunos da escola e a respetiva associação aos encarregados de educação.
+
+---
+
+### Gestão de Professores
+
+Os professores podem consultar e gerir informação relacionada com:
+
+- aulas;
+- participantes;
+- disponibilidade;
+- validações.
+
+---
+
+### Gestão de Aulas
+
+O sistema implementa um fluxo completo de gestão de aulas, incluindo:
+
+- pedido de aulas;
+- aprovação por parte do staff;
+- gestão de participantes;
+- validação por professores e encarregados de educação;
+- cancelamento;
+- conclusão;
+- transições automáticas de estado.
+
+---
+
+## Ciclo de Vida das Aulas
+
+As aulas seguem diferentes estados ao longo do seu ciclo de vida:
+
+```text
+Requested
+   |
+   v
+StaffApproved
+   |
+   v
+Approved
+   |
+   v
+Finished
+   |
+   v
+Pending
+   |
+   v
+Validated
 ```
+
+Existem ainda os estados:
+
+```text
+Rejected
+Cancelled
+```
+
+Algumas das transições são realizadas automaticamente pelo sistema através do `ClassLifecycleWorker`.
+
+Por exemplo:
+
+```text
+Approved -> Finished
+Finished -> Pending
+```
+
+Este serviço é executado em background e verifica periodicamente as aulas que necessitam de alteração automática de estado.
+
+---
+
+## Agenda e Disponibilidades
+
+A aplicação inclui funcionalidades relacionadas com:
+
+- gestão de horários;
+- disponibilidade dos professores;
+- planeamento das aulas;
+- prevenção de conflitos de horários.
+
+---
+
+## Inventário
+
+O sistema permite gerir materiais e equipamentos da escola, incluindo processos de requisição e respetivo acompanhamento.
+
+---
+
+## Eventos e Notificações
+
+A plataforma contempla funcionalidades para:
+
+- gestão de eventos;
+- criação de notificações;
+- acompanhamento de informação relevante pelos diferentes utilizadores.
+
+---
+
+## Faturação
+
+O projeto inclui funcionalidades relacionadas com a gestão e acompanhamento da faturação associada às atividades da escola.
+
+---
+
+## Tecnologias Utilizadas
+
+| Área | Tecnologia |
+|---|---|
+| Backend | ASP.NET Core 10 |
+| Linguagem Backend | C# |
+| ORM | Entity Framework Core 10 |
+| Base de Dados | SQL Server |
+| Base de Dados de Testes | SQLite |
+| Frontend | React 19 |
+| Build Tool | Vite |
+| Routing | React Router |
+| Autenticação | JWT através de cookie HttpOnly |
+| Testes | xUnit |
+| Mocking | Moq |
+| Assertions | FluentAssertions |
+| Testes de Integração | WebApplicationFactory |
+| API Testing | Postman |
+| CI/CD | GitHub Actions |
+| Cloud | Azure |
+
+---
+
+## Arquitetura
+
+A aplicação segue uma arquitetura cliente-servidor.
+
+```text
+React
+  |
+  | HTTP / REST
+  v
+ASP.NET Core API
+  |
+  v
+Entity Framework Core
+  |
+  v
+SQL Server
+```
+
+O frontend comunica com a API através de endpoints REST.
+
+O backend é responsável pela:
+
+- lógica de negócio;
+- autenticação;
+- autorização;
+- validação;
+- acesso à base de dados;
+- processamento das regras da aplicação.
+
+---
+
+## Estrutura do Projeto
+
+```text
 DanceSchoolApp.slnx
-├── DanceSchoolApp.Server/      ← ASP.NET Core API + React SPA host
-│   ├── Controllers/            ← Domain controllers (Classes, People, School, …)
-│   ├── Services/               ← Business logic (auto-registered via reflection)
-│   ├── Models/                 ← EF Core entities
-│   ├── DTOs/                   ← Request/Response shapes
-│   ├── Data/AppDbContext.cs
-│   └── Program.cs
-├── danceschoolapp.client/      ← React 19 + Vite SPA
-├── DanceSchoolApp.Tests/       ← xUnit unit + integration tests
-│   ├── Unit/                   ← Service-layer tests (no HTTP, no DB)
-│   └── Integration/            ← Full HTTP tests against SQLite in-memory
-├── Doc/                        ← API documentation
-│   ├── V1BasicAPI.md
-│   ├── V2AdvancedAPI.md
-│   ├── V3TestsFramework.md
-│   └── EndpointsMapping.md
-├── PostmanCfg/                 ← Postman collection
-└── script.sql                  ← Full DDL for SQL Server
+|
+├── DanceSchoolApp.Server/
+|   ├── Controllers/
+|   ├── Services/
+|   ├── Models/
+|   ├── DTOs/
+|   ├── Data/
+|   └── Program.cs
+|
+├── danceschoolapp.client/
+|   └── Aplicação React
+|
+├── DanceSchoolApp.Tests/
+|   ├── Unit/
+|   └── Integration/
+|
+├── Doc/
+|   ├── V1BasicAPI.md
+|   ├── V2AdvancedAPI.md
+|   ├── V3TestsFramework.md
+|   └── EndpointsMapping.md
+|
+├── PostmanCfg/
+|
+└── README.md
 ```
 
 ---
 
-## ⚙️ Environment Variables
+## Variáveis de Ambiente
 
-| Variable | Purpose |
-|----------|---------|
-| `DanceSchoolApp_DB` | SQL Server connection string |
-| `DanceSchoolApp_JWT_Secret` | JWT signing secret (min 32 chars) |
-| `DanceSchoolApp_Email_Password` | SMTP password (optional — skipped in tests) |
+A aplicação utiliza variáveis de ambiente para informação sensível e configuração externa.
+
+| Variável | Finalidade |
+|---|---|
+| `DanceSchoolApp_DB` | Connection string do SQL Server |
+| `DanceSchoolApp_JWT_Secret` | Chave utilizada para assinatura dos tokens JWT |
+| `DanceSchoolApp_Email_Password` | Password utilizada no serviço SMTP |
+
+As credenciais reais não devem ser adicionadas ao repositório.
 
 ---
 
-## 🚀 Running the Project
+## Como Executar
 
 ### Backend
 
 ```bash
 cd DanceSchoolApp.Server
 dotnet build
-dotnet run          # API on https://localhost:7003, React proxy on https://localhost:5173
+dotnet run
 ```
 
-### Frontend (standalone dev)
+Durante o desenvolvimento, a API é executada localmente e o frontend pode comunicar com o backend através do proxy configurado no Vite.
+
+---
+
+### Frontend
 
 ```bash
 cd danceschoolapp.client
@@ -88,70 +283,123 @@ npm install
 npm run dev
 ```
 
-### Full stack (Visual Studio)
+---
 
-Open `DanceSchoolApp.slnx` and run the Server project. It starts both the API and the Vite dev server via the SPA proxy.
+### Visual Studio
 
-### Database
+Abrir:
 
-```bash
-# Apply schema to a new SQL Server instance
-# Run script.sql in SSMS or Azure Data Studio
-
-# If you add a migration (code-first change):
-dotnet ef migrations add <MigrationName> --project DanceSchoolApp.Server
-dotnet ef database update --project DanceSchoolApp.Server
+```text
+DanceSchoolApp.slnx
 ```
+
+e executar o projeto `DanceSchoolApp.Server`.
+
+A configuração do projeto permite iniciar o backend e o servidor de desenvolvimento do frontend.
 
 ---
 
-## 🧪 Tests
+## Testes
+
+O projeto inclui testes unitários e testes de integração.
+
+Para executar todos os testes:
 
 ```bash
-# All tests
 dotnet test
-
-# Unit tests only (fast, no HTTP)
-dotnet test --filter "Category=Unit"
-
-# Integration tests only (SQLite in-memory, sequential)
-dotnet test --filter "Category=Integration"
 ```
 
-Integration tests are configured to run **sequentially** (no parallelism) to avoid SQLite connection-registry race conditions. Each test class gets its own isolated named in-memory SQLite database.
+Os testes abrangem diferentes áreas da aplicação, incluindo:
+
+- autenticação;
+- autorização;
+- faturação;
+- gestão de aulas;
+- reservas;
+- validações;
+- regras de negócio;
+- permissões;
+- ciclo de vida das aulas.
+
+Os testes de integração utilizam uma base de dados SQLite em memória, permitindo testar os endpoints e o comportamento da aplicação sem depender da base de dados de produção.
 
 ---
 
-## 📖 Documentation
+## Documentação
 
-| Document | Description |
-|----------|-------------|
-| [V1BasicAPI.md](Docs/V1BasicAPI.md) | All primitive REST endpoints (auth, users, classes, billing, …) |
-| [V2AdvancedAPI.md](Docs/V2AdvancedAPI.md) | Role-scoped portal controllers (`/api/staff/*`, `/api/ee/*`, `/api/coach/*`, `/api/admin/*`) |
-| [V3TestsFramework.md](Docs/V3TestsFramework.md) | Testing architecture, bug fixes, and automation added in patch v3 |
-| [EndpointsMapping.md](Docs/EndpointsMapping.md) | Page-by-page map from every React route to its API calls |
-| [PostmanCfg/](PostmanCfg/) | Full Postman collection with flows and debug endpoints |
+A pasta `Doc` contém documentação adicional relacionada com a API e o desenvolvimento do projeto.
 
----
+| Documento | Descrição |
+|---|---|
+| `V1BasicAPI.md` | Endpoints base da aplicação |
+| `V2AdvancedAPI.md` | Endpoints específicos dos diferentes perfis |
+| `V3TestsFramework.md` | Estrutura de testes e melhorias introduzidas |
+| `EndpointsMapping.md` | Relação entre páginas do frontend e endpoints da API |
 
-## 🔄 Class Lifecycle
-
-```
-Requested(0) → StaffApproved(7) → Approved(1) ──→ Finished(4) ──→ Pending(6) → Validated(5)
-                                ↘ Rejected(2)      ↑ automated    ↑ automated
-Requested(0) → Rejected(2)                         after end      after 48h window
-Requested(0) | Approved(1) → Cancelled(3)          datetime       expires
-```
-
-The `Approved → Finished` and `Finished → Pending` transitions are **automated** by `ClassLifecycleWorker` (a background service polling every 5 minutes). Cancelled classes are never touched by the worker.
+A pasta `PostmanCfg` contém a coleção utilizada para testar os endpoints da API.
 
 ---
 
-## 🔑 Roles
+## Equipa
 
-| role_id | role_name | Access |
-|---------|-----------|--------|
-| 0 | admin | Platform administration |
-| 1 | staff | School management (Direção) |
-| 2 | coach | Teaching staff (Professor) |
-| 3 | parent | Guardians (Encarregado de Educação) |
+O projeto foi desenvolvido pela equipa **DRVP Tech**.
+
+| Nome | Número de Aluno |
+|---|---|
+| João Pereira | a31505 |
+| Paulo Silva | a31506 |
+| David Faria | a31517 |
+| Vítor Rezende | a31521 |
+| Rafael Costa | a31524 |
+
+**Instituição:** Instituto Politécnico do Cávado e do Ave — Escola Superior de Tecnologia  
+**Curso:** Licenciatura em Engenharia de Sistemas Informáticos  
+**Ano Letivo:** 2025/2026
+
+---
+
+## Estado do Projeto
+
+O FlowArtes foi desenvolvido em contexto académico como solução para um caso de estudo baseado nas necessidades de uma escola de dança real.
+
+O projeto demonstra a implementação de uma aplicação full-stack com:
+
+- frontend e backend separados;
+- API REST;
+- autenticação e autorização;
+- base de dados relacional;
+- regras de negócio;
+- testes automatizados;
+- CI/CD;
+- integração com serviços externos.
+
+Algumas funcionalidades encontram-se completamente implementadas, enquanto outras estão preparadas para evolução futura.
+
+---
+
+## Objetivos de Aprendizagem
+
+Durante o desenvolvimento deste projeto foram aplicados conhecimentos relacionados com:
+
+- desenvolvimento full-stack;
+- ASP.NET Core;
+- React;
+- APIs REST;
+- autenticação e autorização;
+- bases de dados relacionais;
+- Entity Framework Core;
+- testes unitários;
+- testes de integração;
+- arquitetura de software;
+- Git e GitHub;
+- CI/CD;
+- desenvolvimento em equipa;
+- documentação de software.
+
+---
+
+## Contexto Académico
+
+Este repositório representa um projeto desenvolvido em contexto académico.
+
+A aplicação não deve ser interpretada como um produto comercial final, mas como uma solução funcional criada para aplicar conceitos de engenharia de software a um problema próximo de um cenário real.
